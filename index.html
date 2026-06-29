@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNS Analytics Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css?v=20260620-3">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="common-sidebar" aria-label="共通メニュー">
+      <button class="sidebar-toggle" type="button" onclick="toggleCommonSidebar()" title="サイドバーを切り替え" aria-label="サイドバーを切り替え"><span id="toggle-icon">❮</span></button>
+      <div class="sidebar-brand">
+        <a class="sidebar-dashboard-title" href="file:///C:/Kita/webdocs/kitatani/dashboard/index.html">Kita Dashboard</a>
+        <div class="sidebar-clock">
+          <div class="sidebar-date" id="hdr-date">----</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="common-sidebar-nav"></nav>
+    </aside>
+
+  <div class="container">
+    <section id="hero-section" class="hero-section"></section>
+
+    <header>
+      <h1>SNS Analytics Dashboard</h1>
+      <p>フォロワー推移、課題管理、施策ログ、履歴確認をまとめて行えます。</p>
+    </header>
+
+    <section id="insight-section" class="card">
+      <div class="section-head">
+        <div>
+          <h2>分析メモ</h2>
+          <p class="section-copy">SNSごとの役割と直近推移に合わせて、見るべき指標と次の一手を確認します。</p>
+        </div>
+      </div>
+      <div id="insight-tabs" class="insight-tabs"></div>
+      <div id="insight-cards" class="insight-grid"></div>
+    </section>
+
+    <section id="summary-section">
+      <!-- Summary cards -->
+    </section>
+
+    <section id="charts-section" class="card chart-card">
+      <div class="section-head">
+        <div>
+          <h2>SNS followers 推移</h2>
+          <p class="section-copy">合計またはSNSごとに、フォロワー数の推移を切り替えて確認します。</p>
+        </div>
+      </div>
+      <div id="chart-controls"></div>
+      <div id="chart-body"></div>
+    </section>
+
+    <section id="history-section" class="card">
+      <h2>フォロワー履歴</h2>
+      <p class="section-copy">記録された日付をすべて表示し、フォロワー数に変化があった日付と数値を強調しています。</p>
+      <div class="history-month-toolbar">
+        <button id="history-prev-month" class="btn-secondary" type="button">前の月</button>
+        <div id="history-current-month" class="history-current-month"></div>
+        <button id="history-next-month" class="btn-secondary" type="button">次の月</button>
+      </div>
+      <div id="history-list"></div>
+    </section>
+
+    <section id="fetch-log-section" class="card">
+      <h2>取得履歴</h2>
+      <p class="section-copy">自動取得が実行された日時の一覧です。</p>
+      <div id="fetch-log-list"></div>
+    </section>
+
+    <section id="strategy-section" class="card">
+      <div class="section-head">
+        <div>
+          <h2>課題・解決策・タスク</h2>
+          <p class="section-copy">全体またはSNSごとに、課題・解決策・タスクを記録します。</p>
+        </div>
+      </div>
+      <form id="strategy-form" class="stack-form">
+        <div class="form-grid form-grid-4">
+          <div class="form-group">
+            <label for="strategy-date">日付</label>
+            <input type="date" id="strategy-date" required>
+          </div>
+          <div class="form-group">
+            <label for="strategy-type">種類</label>
+            <select id="strategy-type" required>
+              <option value="issue">課題</option>
+              <option value="solution">解決策</option>
+              <option value="task">タスク</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="strategy-category">カテゴリ</label>
+            <select id="strategy-category" required></select>
+          </div>
+          <div class="form-group">
+            <label for="strategy-status">状態</label>
+            <select id="strategy-status">
+              <option value="open">未着手</option>
+              <option value="doing">進行中</option>
+              <option value="done">完了</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="strategy-title">タイトル</label>
+          <input type="text" id="strategy-title" placeholder="例: Xのプロフィール流入が落ちている" required>
+        </div>
+        <div class="form-group">
+          <label for="strategy-detail">詳細</label>
+          <textarea id="strategy-detail" rows="4" placeholder="背景、仮説、次にやることを書いてください。" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary">保存する</button>
+      </form>
+      <div id="strategy-board" class="board-grid"></div>
+    </section>
+
+    <section id="experiment-section" class="card">
+      <div class="section-head">
+        <div>
+          <h2>施策ログ</h2>
+          <p class="section-copy">いつ何を始めて、その後どうなったかを日付付きで記録します。</p>
+        </div>
+      </div>
+      <form id="experiment-form" class="stack-form">
+        <div class="form-grid form-grid-4">
+          <div class="form-group">
+            <label for="experiment-date">開始日</label>
+            <input type="date" id="experiment-date" required>
+          </div>
+          <div class="form-group">
+            <label for="experiment-category">カテゴリ</label>
+            <select id="experiment-category" required></select>
+          </div>
+          <div class="form-group">
+            <label for="experiment-impact">結果</label>
+            <select id="experiment-impact">
+              <option value="unknown">未評価</option>
+              <option value="up">増加</option>
+              <option value="down">減少</option>
+              <option value="flat">横ばい</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="experiment-metric">数値メモ</label>
+            <input type="text" id="experiment-metric" placeholder="例: 1週間で+2人">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="experiment-action">何を始めたか</label>
+          <input type="text" id="experiment-action" placeholder="例: Reelの最後にLINE登録CTAを入れ始めた" required>
+        </div>
+        <div class="form-group">
+          <label for="experiment-note">メモ</label>
+          <textarea id="experiment-note" rows="4" placeholder="目的、対象、投稿内容、気づきなどを記録します。"></textarea>
+        </div>
+        <button type="submit" class="btn-primary">保存する</button>
+      </form>
+      <div class="toolbar">
+        <button id="export-notes-btn" type="button" class="btn-secondary">メモを書き出す</button>
+      </div>
+      <div id="experiment-log" class="timeline"></div>
+    </section>
+  </div>
+    <nav class="side-nav right-nav" id="side-nav" aria-label="SNS Analytics メニュー">
+      <div class="side-nav-inner">
+        <p class="side-nav-title">SNS Analytics</p>
+        <ul class="nav-list">
+          <li><a href="#insight-section" class="nav-link">分析メモ</a></li>
+          <li><a href="#summary-section" class="nav-link">サマリー</a></li>
+          <li><a href="#charts-section" class="nav-link">チャート</a></li>
+          <li><a href="#history-section" class="nav-link">フォロワー履歴</a></li>
+          <li><a href="#fetch-log-section" class="nav-link">取得履歴</a></li>
+          <li><a href="#strategy-section" class="nav-link">課題・施策</a></li>
+          <li><a href="#experiment-section" class="nav-link">施策ログ</a></li>
+        </ul>
+        <div class="right-actions">
+          <div class="right-actions-title">データ操作</div>
+          <button id="fetch-latest-btn" type="button" class="right-action-btn">データ取得</button>
+          <button id="open-login-btn" type="button" class="right-action-btn">ログインChrome</button>
+          <button id="export-data-btn" type="button" class="right-action-btn">エクスポート</button>
+          <label for="import-data-input" class="right-action-btn io-import-label">インポート</label>
+          <input type="file" id="import-data-input" accept=".json" style="display:none">
+          <button id="open-export-folder-btn" type="button" class="right-action-btn">エクスポートフォルダ</button>
+          <div id="fetch-status" class="fetch-status" aria-live="polite"></div>
+          <div id="fetch-results" class="fetch-results"></div>
+          <span id="import-status" class="import-status"></span>
+        </div>
+      </div>
+    </nav>
+  </div><!-- /.layout -->
+
+  <script src="supabase-config.js?v=20260629-1"></script>
+  <script src="script.js?v=20260629-1"></script>
+  <script src="fetch-ui.js?v=20260620-3"></script>
+</body>
+</html>
