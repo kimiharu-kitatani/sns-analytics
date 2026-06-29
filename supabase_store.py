@@ -70,7 +70,12 @@ def upsert_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         json=records,
         timeout=30,
     )
-    response.raise_for_status()
+    if not response.ok:
+        detail = response.text[:500]
+        raise requests.HTTPError(
+            f"{response.status_code} {response.reason}: {detail}",
+            response=response,
+        )
     if not response.content:
         return []
     return response.json()
