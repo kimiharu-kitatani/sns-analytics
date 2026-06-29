@@ -23,3 +23,7 @@ create policy "sns follower records are publicly readable"
   on public.sns_follower_records
   for select
   using (true);
+
+grant select on table public.sns_follower_records to anon, authenticated;
+grant select, insert, update on table public.sns_follower_records to service_role;
+grant usage, select on all sequences in schema public to service_role;
